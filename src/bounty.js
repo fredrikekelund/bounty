@@ -93,7 +93,9 @@ export default ({
   letterSpacing = 1,
   animationDelay = 100,
   letterAnimationDelay = 100,
-  duration = 3000
+  duration = 3000,
+  easing = null,
+  rotations = ROTATIONS
 }) => {
   const element = select(el);
   const computedStyle = window.getComputedStyle(element);
@@ -160,8 +162,8 @@ export default ({
   digits.forEach((digit, i) => {
     const sourceDistance = digit.initial * (fontSize * lineHeight);
     const targetDistance =
-      (ROTATIONS * DIGITS_COUNT + digit.value) * (fontSize * lineHeight);
-    const digitTransition = transition({
+      (rotations * DIGITS_COUNT + digit.value) * (fontSize * lineHeight);
+    let transitionOptions = {
       from: sourceDistance,
       to: targetDistance,
       duration: duration,
@@ -183,7 +185,11 @@ export default ({
         digit.filter::attr('stdDeviation', `0 ${motionValue}`);
       },
       end: i === 0 ? () => cancelAnimation() : e => e
-    });
+    };
+    if (easing) {
+      transitionOptions.easing = easing;
+    }
+    const digitTransition = transition(transitionOptions);
     transitions.push(digitTransition);
   });
 
